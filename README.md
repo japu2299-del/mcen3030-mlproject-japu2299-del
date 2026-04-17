@@ -97,7 +97,7 @@ The baseline model was implemented in MATLAB using the Statistics and Machine Le
 
 ### Discussion
 
-The baseline model achieved strong performance at 92.75%. Notable observations:
+The baseline model achieved strong performance at 92.55%. Notable observations:
 
 - **BOMBAY** achieved a perfect 1.000 across all metrics, indicating it is geometrically very distinct from all other bean types
 - **SIRA** had the weakest performance (F1 = 0.879), with 75 actual SIRA samples being misclassified as DERMASON — the largest single source of error in the entire model
@@ -122,7 +122,7 @@ For Random Forest, the key hyperparameters are:
 
 Bayesian optimization was run using MATLAB's `fitcensemble` with `OptimizeHyperparameters = 'auto'` over 30 trials. The optimizer explored three ensemble methods — Bag, AdaBoostM2, and RUSBoost — and converged on **Bag (Random Forest) with MinLeafSize = 2 and ~497 trees** as the best configuration. This confirmed Random Forest as the correct method for this dataset.
 
-The optimized model returned 92.63% accuracy, marginally below the baseline 92.75%, confirming the original model was already near-optimal. The key finding was that **MinLeafSize = 2** (slightly shallower trees) was preferred. The number of trees was reduced to **50** based on the OOB error plot plateauing near 40 trees, and a sweep of `NumPredictorsToSample` values was run to find the best feature sampling rate at 16.
+The optimized model returned 92.63% accuracy, marginally above the baseline 92.55%, confirming the original model was already near-optimal. The key finding was that **MinLeafSize = 2** (slightly shallower trees) was preferred. The number of trees was reduced to **50** based on the OOB error plot plateauing near 40 trees, and a sweep of `NumPredictorsToSample` values was run to find the best feature sampling rate at 16.
 
 **See code:** [`code_2/bean_classification_tuned.m`](code_2/bean_classification_tuned.m)
 
@@ -154,7 +154,7 @@ The optimized model returned 92.63% accuracy, marginally below the baseline 92.7
 
 ### What Changed Between Models
 
-The tuned model improved overall accuracy from 92.75% to 92.95% — a modest but consistent gain achieved with half the number of trees (50 vs. 100), demonstrating that the OOB plateau analysis was correct. The most notable per-class improvements were in **BARBUNYA**, where recall rose from 90.7% to 91.7% and F1 improved from 0.925 to 0.933, and in **CALI**, where recall improved from 94.1% to 94.9%. **SIRA** remained the hardest class to classify correctly, with 75 samples still being misclassified as DERMASON in both models — suggesting this confusion reflects a genuine geometric overlap between these two bean types that is difficult to resolve with shape features alone. **BOMBAY** remained perfect across both models.
+The tuned model improved overall accuracy from 92.55% to 92.95% — a modest but consistent gain achieved with half the number of trees (50 vs. 100), demonstrating that the OOB plateau analysis was correct. The most notable per-class improvements were in **BARBUNYA**, where recall rose from 90.7% to 91.7% and F1 improved from 0.925 to 0.933, and in **CALI**, where recall improved from 94.1% to 94.9%. **SIRA** remained the hardest class to classify correctly, with 75 samples still being misclassified as DERMASON in both models — suggesting this confusion reflects a genuine geometric overlap between these two bean types that is difficult to resolve with shape features alone. **BOMBAY** remained perfect across both models.
 
 ---
 
