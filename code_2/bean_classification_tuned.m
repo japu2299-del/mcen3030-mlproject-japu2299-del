@@ -36,7 +36,7 @@ fprintf('Training samples: %d | Test samples: %d\n', ...
     sum(cv.training), sum(cv.test));
 
 %% 4. TRAIN RANDOM FOREST
-numTrees = 100;   % Number of trees — can tune this later
+numTrees = 50;   % Number of trees — can tune this later
 
 forest = TreeBagger(50, X_train, Y_train, ...   % dropped to 50 based on OOB plot
     'Method',                   'classification', ...
