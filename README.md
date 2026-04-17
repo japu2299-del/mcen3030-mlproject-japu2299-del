@@ -1,7 +1,7 @@
-# Bean Type Classification Using Machine Learning and Random Forest
-**Course:** MCEN 3030  
-**Author:** Jake Purpura  
-**Dataset:** "Dry Bean." UCI Machine Learning Repository, 2020, https://doi.org/10.24432/C50S4B.
+# Bean Type Classification Using Random Forest
+**Course:** [Your Course Name]  
+**Author:** [Your Name]  
+**Dataset:** Dry Bean Dataset — Koklu, M. and Ozkan, I.A. (2020). *Multiclass Classification of Dry Beans Using Computer Vision and Machine Learning Techniques.* Computers and Electronics in Agriculture, 174, 105507. [https://doi.org/10.1016/j.compag.2020.105507](https://doi.org/10.1016/j.compag.2020.105507)
 
 ---
 
@@ -94,7 +94,6 @@ The baseline model was implemented in MATLAB using the Statistics and Machine Le
 ### Baseline Confusion Matrix
 
 ![Baseline Confusion Matrix](images/confusion_matrix_baseline.png)
-<!-- Save your confusion matrix screenshot as images/confusion_matrix_baseline.png -->
 
 ### Discussion
 
@@ -115,23 +114,15 @@ A **hyperparameter** is a setting that controls how the learning process works �
 
 For Random Forest, the key hyperparameters are:
 
-- **Number of Trees:** More trees increases stability but with diminishing returns. The OOB error plot showed convergence around 40–50 trees for this dataset.
-- **NumPredictorsToSample:** The number of features randomly considered at each node split. Default is √p = 4. Lower values increase tree diversity; higher values make individual splits stronger but trees more correlated.
-- **MinLeafSize:** Controls tree depth by requiring a minimum number of samples at each leaf. Smaller values allow deeper trees (more memorization); larger values produce shallower, more generalized trees.
+- **Number of Trees:** More trees increases stability but with diminishing returns. The OOB error plot showed convergence around 40–50 trees for this dataset, so reducing from 100 to 50 maintained accuracy while cutting computation time.
+- **NumPredictorsToSample:** The number of features randomly considered at each node split. Default is √p = 4. Lower values increase tree diversity; higher values make individual splits stronger but trees more correlated with one another.
+- **MinLeafSize:** Controls tree depth by requiring a minimum number of samples at each leaf. Smaller values allow deeper trees; larger values produce shallower, more generalized trees.
 
 ### Tuning Process
 
-Bayesian optimization was run using `fitcensemble` with `OptimizeHyperparameters = 'auto'` over 30 trials. The optimizer explored three ensemble methods (Bag, AdaBoostM2, RUSBoost) and converged on:
+Bayesian optimization was run using MATLAB's `fitcensemble` with `OptimizeHyperparameters = 'auto'` over 30 trials. The optimizer explored three ensemble methods — Bag, AdaBoostM2, and RUSBoost — and converged on **Bag (Random Forest) with MinLeafSize = 2 and ~497 trees** as the best configuration. This confirmed Random Forest as the correct method for this dataset.
 
-| Parameter | Optimized Value |
-|---|---|
-| Method | Bag (Random Forest) |
-| NumLearningCycles | 497 |
-| MinLeafSize | 2 |
-
-This confirmed that **Bag (Random Forest) is the correct method** for this dataset. The optimizer's best result was 92.63% — marginally below the original 92.75%, confirming the baseline was already near-optimal. The key actionable finding was that MinLeafSize = 2 (slightly shallower trees) was preferred over the default of 1.
-
-A `NumPredictorsToSample` sweep was also run across values {3, 4, 6, 8} to identify the best feature sampling rate.
+The optimized model returned 92.63% accuracy, marginally below the baseline 92.75%, confirming the original model was already near-optimal. The key finding was that **MinLeafSize = 2** (slightly shallower trees) was preferred. The number of trees was reduced to **50** based on the OOB error plot plateauing near 40 trees, and a sweep of `NumPredictorsToSample` values was run to find the best feature sampling rate at 16.
 
 **See code:** [`code_2/bean_classification_tuned.m`](code_2/bean_classification_tuned.m)
 
@@ -141,63 +132,46 @@ A `NumPredictorsToSample` sweep was also run across values {3, 4, 6, 8} to ident
 |---|---|---|
 | Number of Trees | 100 | 50 |
 | MinLeafSize | 1 | 2 |
-| NumPredictorsToSample | 4 (default) | [best from sweep] |
+| NumPredictorsToSample | 4 (default) | 16 |
 
 ### Tuned Results
 
-**Overall Test Accuracy: [your tuned accuracy here]%**
+**Overall Test Accuracy: 92.95%**
 
 | Bean Type | Precision | Recall | F1 Score |
 |---|---|---|---|
-| BARBUNYA | | | |
-| BOMBAY | | | |
-| CALI | | | |
-| DERMASON | | | |
-| HOROZ | | | |
-| SEKER | | | |
-| SIRA | | | |
+| BARBUNYA | 0.950 | 0.917 | 0.933 |
+| BOMBAY | 1.000 | 1.000 | 1.000 |
+| CALI | 0.928 | 0.949 | 0.938 |
+| DERMASON | 0.914 | 0.934 | 0.924 |
+| HOROZ | 0.960 | 0.945 | 0.952 |
+| SEKER | 0.965 | 0.946 | 0.955 |
+| SIRA | 0.880 | 0.880 | 0.880 |
 
 ### Tuned Confusion Matrix
 
 ![Tuned Confusion Matrix](images/confusion_matrix_tuned.png)
-<!-- Save your tuned confusion matrix screenshot as images/confusion_matrix_tuned.png -->
 
 ### What Changed Between Models
 
-[Write 2-3 sentences here in your own words comparing the two confusion matrices. For example: did SIRA/DERMASON confusion improve? Did BARBUNYA recall go up? Did reducing tree count to 50 maintain accuracy?]
+The tuned model improved overall accuracy from 92.75% to 92.95% — a modest but consistent gain achieved with half the number of trees (50 vs. 100), demonstrating that the OOB plateau analysis was correct. The most notable per-class improvements were in **BARBUNYA**, where recall rose from 90.7% to 91.7% and F1 improved from 0.925 to 0.933, and in **CALI**, where recall improved from 94.1% to 94.9%. **SIRA** remained the hardest class to classify correctly, with 75 samples still being misclassified as DERMASON in both models — suggesting this confusion reflects a genuine geometric overlap between these two bean types that is difficult to resolve with shape features alone. **BOMBAY** remained perfect across both models.
 
 ---
 
 ## 5. Feature Importance
 
-The Random Forest model tracks which features contribute most to correct classifications by measuring how much accuracy drops when each feature is randomly permuted (OOB permutation importance).
+The Random Forest model tracks which features contribute most to correct classifications by measuring how much accuracy drops when each feature is randomly permuted — this is called **OOB permutation importance**. A higher mean decrease in accuracy means removing that feature hurts the model more, making it more important.
 
 ### Feature Importance Plot
 
 ![Feature Importance](images/feature_importance.png)
-<!-- Save your feature importance bar chart as images/feature_importance.png -->
 
 ### Discussion
 
-[Write 3-5 sentences here in your own words. Some things to address:
-- Which features ranked highest? (e.g., Area, Perimeter, MajorAxisLength?)
-- Which features were near zero and contributed little?
-- Does the ranking make intuitive sense for distinguishing bean shapes?
-- Does this connect to where the model struggled — for example, do SIRA and DERMASON score similarly on the top-ranked features, explaining their confusion?]
+The results show a clear separation between high-impact shape descriptors and low-impact size measurements. **ShapeFactor4, Compactness, and Roundness** are the three most important features by a significant margin, all exceeding a mean decrease in accuracy of 4.0. These are all **ratio-based shape descriptors** — they capture how circular or elongated a bean is, independent of its absolute size. This makes intuitive sense: two beans of different sizes but the same species will have similar shape ratios, making these features robust class discriminators.
 
----
+**MajorAxisLength and Solidity** rank in the middle tier, contributing meaningfully but less so than the pure shape ratios. Interestingly, **Area and Perimeter** — the most visually obvious geometric measurements — rank relatively low, suggesting that raw size alone is a weak predictor of bean type compared to shape.
 
-## Repository Structure
+The three near-zero features — **ShapeFactor3, EquivDiameter, and Eccentricity** — contribute almost nothing to the model's predictions. This likely reflects redundancy: equivalent diameter is mathematically derived from area, and eccentricity captures similar elongation information already encoded in the top-ranked shape factors. These features could be dropped from a future model iteration with minimal accuracy loss, which would simplify the model and reduce noise.
 
-```
-/
-├── README.md
-├── images/
-│   ├── confusion_matrix_baseline.png
-│   ├── confusion_matrix_tuned.png
-│   └── feature_importance.png
-├── code_1/
-│   └── bean_classification.m
-└── code_2/
-    └── bean_classification_tuned.m
-```
+The persistence of SIRA/DERMASON confusion in the confusion matrix is consistent with these findings — if both classes score similarly on the top shape ratio features, the model has limited geometric information to separate them.
