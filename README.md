@@ -1,6 +1,6 @@
-# Bean Type Classification Using Random Forest
-**Course:** [Your Course Name]  
-**Author:** [Your Name]  
+# Bean Type Classification Using Machine Learning
+**Course:** MCEN 3030  
+**Author:** Jake Purpura + Claude  
 **Dataset:** Dry Bean Dataset — Koklu, M. and Ozkan, I.A. (2020). *Multiclass Classification of Dry Beans Using Computer Vision and Machine Learning Techniques.* Computers and Electronics in Agriculture, 174, 105507. [https://doi.org/10.1016/j.compag.2020.105507](https://doi.org/10.1016/j.compag.2020.105507)
 
 ---
