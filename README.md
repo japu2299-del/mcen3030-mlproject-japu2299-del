@@ -1,6 +1,6 @@
-# Bean Type Classification Using Random Forest
-**Course:** [MCEN 3030]  
-**Author:** [Jake Purpura]  
+# Bean Type Classification Using Machine Learning and Random Forest
+**Course:** MCEN 3030  
+**Author:** Jake Purpura  
 **Dataset:** "Dry Bean." UCI Machine Learning Repository, 2020, https://doi.org/10.24432/C50S4B.
 
 ---
